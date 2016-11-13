@@ -1,0 +1,13 @@
+*.h5
+
+uploads/
+
+*.pyc
+
+.py[cod]
+
+
+test_images/*
+
+
+!test_images/download.sh
