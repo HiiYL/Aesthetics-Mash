@@ -1,60 +1,41 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Hello World!</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-	<link rel="stylesheet" href="https://code.getmdl.io/1.2.0/material.indigo-pink.min.css">
-	<script defer src="https://code.getmdl.io/1.2.0/material.min.js"></script>
+  <title>Hello World!</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://code.getmdl.io/1.2.1/material.indigo-pink.min.css">
+  <script defer src="https://code.getmdl.io/1.2.1/material.min.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 </head>
 <body>
-<div class="mdl-layout">
   <div class="mdl-grid">
-      {% if comparison_set is defined %}
+    {% if comparison_set is defined %}
+    <div class="mdl-cell mdl-cell--2-col"></div>
+       <div class="mdl-cell mdl-cell--3-col">
         <div class="demo-card-image mdl-card mdl-shadow--2dp base">
           <div class="mdl-card__title mdl-card--expand"></div>
           <div class="mdl-card__actions">
             <span class="demo-card-image__filename">{{comparison_set[0].score.values[0]}}</span>
           </div>
         </div>
+      </div>
+      <div class="mdl-cell mdl-cell--1-col"></div>
+        <div class="mdl-cell mdl-cell--3-col">
         <div class="demo-card-image mdl-card mdl-shadow--2dp compare">
           <div class="mdl-card__title mdl-card--expand"></div>
           <div class="mdl-card__actions">
             <span class="demo-card-image__filename">{{comparison_set[1].score.values[0]}}</span>
           </div>
         </div>
-      {% endif %}
-  </div>
-
-  <div class="mdl-grid">
-    <form action="" method=post id="form" class="file_input_div" enctype=multipart/form-data>
-      <div class="file_input_div">
-        <div class="file_input">
-          <label class="image_input_button mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-js-ripple-effect mdl-button--colored">
-            <i class="material-icons">file_upload</i>
-            <input type=file name=file id="file" class="none">
-          </label>
-        </div>
-        <div id="file_input_text_div" class="mdl-textfield mdl-js-textfield textfield-demo">
-          <input class="file_input_text mdl-textfield__input" type="text" disabled readonly id="file_input_text" />
-          <label class="mdl-textfield__label" for="file_input_text"></label>
-        </div>
       </div>
-     </form>
+    {% endif %}
   </div>
-</div>
 
-<!--     <form action="" method=post id="form" enctype=multipart/form-data>
-      <input type=file name=file id="file">
-      <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">
-	  Upload
-	  </button>
-     </form> -->
 </body>
 </html>
 <style>
 body {
-   display: flex;
+   /*display: flex;*/
 }
 
 .file_input_div {
@@ -85,6 +66,11 @@ body {
   {% if comparison_set %}
     background: url('{{url_for('test_image_file', filename='{}.jpg'.format(comparison_set[0].index[0]))}}') center / cover;
   {% endif %}
+}
+.demo-card-image.mdl-card:hover {
+  transition: all 0.5s ease;
+  transform: rotate(20deg);
+  
 }
 .demo-card-image.mdl-card.compare {
   width: 256px;
