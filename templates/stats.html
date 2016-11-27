@@ -9,15 +9,15 @@
 <body>
   <div class="stats">
   <h1>Thank you for playing! </h1>
-  <h4>You played {{ session.total }} games. </h4>
-  <p>That is more than {{ (100 - args[0]) | round(2) }} % of players! </p>
+  <h4>You played <b>{{ session.total }}</b> games. </h4>
+  <p>That is more than <b>{{ (100 - args[0]) | round(2) }} %</b> of players! </p>
 
-  <h4>Out of those, you won {{ session.current }} games. </h4>
-  <h5>Which puts you in the top {{ args[1] | round(2) }} % of players! </h5>
+  <h4>Out of those, you were right in <b>{{ session.current }}</b> games. </h4>
+  <p>Which puts you in the top <b>{{ args[1] | round(2) }} % </b> of players! </p>
 
-  <h4>Your Win Rate is {{(args[2] * 100) | round(2) }} %</h4>
-  <h5>That is higher than {{ (100 - args[3]) | round(2) }} % of people! </h5>
-  <p>Your performance was also better than {{ (100 - args[4]) | round(2) }} % of the AI </p>
+  <h4>Your Accuracy is <b>{{(args[2] * 100) | round(2) }} %. </b></h4>
+  <h5>That is higher than <b>{{ (100 - args[3]) | round(2) }} %</b> of people! </h5>
+  <p>Your performance was also better than <b>{{ (100 - args[4]) | round(2) }} %</b> of the AI. </p>
   <a href="/reset">
     <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored center">
       Done

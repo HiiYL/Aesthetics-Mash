@@ -30,14 +30,22 @@ app.config['TEST_IMAGES_FOLDER'] = TEST_IMAGES_FOLDER
 app.config['HEATMAP_FOLDER'] = HEATMAP_FOLDER
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
 
+delta = 1.5
+
 db = SQLAlchemy(app)
+
+# To read from sqlite3 database
+# import sqlite3
+# cnx = sqlite3.connect('/tmp/test.db')
+# pd.read_sql('SELECT * from game_session',cnx)
 
 
 # from main import db
 # from main import GameSession
+# db.drop_all()
 # db.create_all()
-# session = GameSession(24,16,18)
-# db.session.add(session)
+# game_session = GameSession(24,16,18,delta)
+# db.session.add(game_session)
 # db.session.commit()
 # GameSession.query.all()
 # class User(db.Model):
@@ -59,23 +67,22 @@ class GameSession(db.Model):
     player_win_rate = db.Column(db.Float)
     ai_win_count = db.Column(db.Integer)
     ai_win_rate = db.Column(db.Float)
+    delta = db.Column(db.Float)
     game_date = db.Column(db.DateTime)
 
-    def __init__(self, games_count, player_win_count, ai_win_count, game_date=None):
+    def __init__(self, games_count, player_win_count, ai_win_count,delta, game_date=None):
         self.games_count = games_count
         self.player_win_count = player_win_count
         self.player_win_rate = player_win_count / games_count
         self.ai_win_count = ai_win_count
-        self.ai_win_rate = ai_win_count / player_win_count
+        self.ai_win_rate = ai_win_count / games_count
+        self.delta = delta
         if game_date is None:
             game_date = datetime.utcnow()
         self.game_date = game_date
 
     def __repr__(self):
-        return '<Post %r>' % self.id
-
-
-
+        return '<Post {}> {} {} {} {} {}'.format(self.id, self.games_count,self.player_win_count, self.ai_win_count,self.ai_win_rate, self.delta)
 
 
 model = VGG_19_GAP_functional("aesthestic_gap_weights_1.h5", heatmap=True)
@@ -93,7 +100,7 @@ def root():
 
 
     base = ava_table.ix[np.random.choice(ava_table.index, 1)[0]]
-    to_compare_df = ava_table.ix[abs(ava_table['score'] - base.score) > 1.5]
+    to_compare_df = ava_table.ix[abs(ava_table['score'] - base.score) > delta]
     to_compare = to_compare_df.ix[np.random.choice(to_compare_df.index, 1)[0]]
 
     return render_template('index.html', comparison_set=[base, to_compare])
@@ -111,7 +118,7 @@ def stats():
     return render_template('stats.html', args=[games_played_percentile,games_won_percentile,win_rate,games_winrate_percentile,winrate_against_ai_percentile])
 @app.route("/reset")
 def reset():
-    game_session = GameSession(session['total'],session['current'],session['cpu_current'])
+    game_session = GameSession(session['total'],session['current'],session['cpu_current'], delta)
     db.session.add(game_session)
     db.session.commit()
     session.clear()
