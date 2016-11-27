@@ -6,9 +6,6 @@ uploads/
 
 .py[cod]
 
-
-test_images/*
-
 *.tar.gz
 
 *.jpg
