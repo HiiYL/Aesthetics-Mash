@@ -207,7 +207,7 @@ def compare():
             process_and_generate_heatmap(conv_output, 
                 model, heights[i], widths[i], compare_img_original, compare_im, '{}.jpg'.format(to_compare.name))
 
-    return render_template('index.html', comparison_set=[base, to_compare], correct=correct, cpu_confidence=good_class_confidence)
+    return render_template('index.html', comparison_set=[base, to_compare],selected=selected,cpu_selected=cpu_winner_predict, groundtruth=winner, correct=correct, cpu_confidence=good_class_confidence)
 
 
 

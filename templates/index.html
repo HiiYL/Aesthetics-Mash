@@ -9,10 +9,43 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 </head>
 <body>
-  {% if comparison_set is defined %}
+  {% if cpu_confidence is defined %}
     <div class="mdl-grid">
       <div class="mdl-cell mdl-cell--3-col mdl-cell--2-offset">
-        <div class="demo-card-image mdl-card mdl-shadow--2dp base">
+        <div class="demo-card-image mdl-card mdl-shadow--2dp base heatmap
+         {{'player' if selected == 0 }} {{ 'groundtruth' if groundtruth == 0 }}
+         {{'computer' if cpu_selected == 0}}">
+          <div class="mdl-card__title mdl-card--expand"></div>
+        </div>
+        {% if cpu_confidence is defined %}
+        <h5 class="{{'text-bold' if groundtruth == 0 }}">
+        Average Score  : {{ comparison_set[0].score | round(2) }} 
+        </h5>
+        <h5 class="{{'text-bold' if cpu_selected == 0 }}">
+        CPU Confidence : {{ (cpu_confidence[0] * 10) | round(2) }}
+        </h5>
+        {% endif %}
+      </div>
+      <div class="mdl-cell mdl-cell--3-col mdl-cell--1-offset">
+        <div class="demo-card-image mdl-card mdl-shadow--2dp compare heatmap
+         {{'player' if selected == 1 }} {{ 'groundtruth' if groundtruth == 1 }}
+         {{'computer' if cpu_selected == 1}}">
+          <div class="mdl-card__title mdl-card--expand"></div>
+        </div>
+        {% if cpu_confidence is defined %}
+        <h5 class="{{'text-bold' if groundtruth == 1 }}">
+        Average Score  : {{ comparison_set[1].score | round(2) }}
+        </h5>
+        <h5 class="{{'text-bold' if cpu_selected == 1 }}">
+        CPU Confidence : {{ (cpu_confidence[1] * 10) | round(2) }}
+        </h5>
+        {% endif %}
+      </div>
+    </div>
+  {% elif comparison_set is defined %}
+    <div class="mdl-grid">
+      <div class="mdl-cell mdl-cell--3-col mdl-cell--2-offset">
+        <div class="demo-card-image mdl-card mdl-shadow--2dp base boxed">
           <div class="mdl-card__title mdl-card--expand"></div>
   <!--           <div class="mdl-card__actions">
             <span class="demo-card-image__filename">{{comparison_set[0].score}}</span>
@@ -37,41 +70,14 @@
       </div>
     </div>
   {% endif %}
-  {% if cpu_confidence is defined %}
-    <div class="mdl-grid">
-      <div class="mdl-cell mdl-cell--3-col mdl-cell--2-offset">
-        <div class="demo-card-image mdl-card mdl-shadow--2dp base heatmap">
-          <div class="mdl-card__title mdl-card--expand"></div>
-  <!--           <div class="mdl-card__actions">
-            <span class="demo-card-image__filename">{{comparison_set[0].score}}</span>
-          </div> -->
-        </div>
-        {% if cpu_confidence is defined %}
-        <h5>Average Score  : {{ comparison_set[0].score | round(2) }} </h5>
-        <h5>CPU Confidence : {{ (cpu_confidence[0] * 10) | round(2) }}</h5>
-        {% endif %}
-      </div>
-      <div class="mdl-cell mdl-cell--3-col mdl-cell--1-offset">
-        <div class="demo-card-image mdl-card mdl-shadow--2dp compare heatmap">
-          <div class="mdl-card__title mdl-card--expand"></div>
-  <!--           <div class="mdl-card__actions">
-            <span class="demo-card-image__filename">{{comparison_set[1].score}}</span>
-          </div> -->
-        </div>
-        {% if cpu_confidence is defined %}
-        <h5>Average Score  : {{ comparison_set[1].score | round(2) }} </h5>
-        <h5>CPU Confidence : {{ (cpu_confidence[1] * 10) | round(2) }}</h5>
-        {% endif %}
-      </div>
-    </div>
-  {% endif %}
+
   <div class="mdl-grid">
     {% if correct is defined %}
-    <div class="mdl-cell--4-offset">
+    <div class="mdl-cell--5-offset text-center">
       {% if correct %}
-      <h1>You are RIGHT!</h1>
+      <h4>You are <b>RIGHT</b>!</h4>
       {% else %}
-      <h1>You are Wrong!</h1>
+      <h4>You are <b>Wrong</b>!</h4>
       {% endif %}
       <a href="/">
         <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">
@@ -114,16 +120,46 @@
    /*display: flex;*/
  }
 
- .none {
+.none {
   display: none;
 }
 .scoreboard {
   position: absolute;
-  top: 0px;
-  right: 0px;
+  top: 10px;
+  right: 10px;
 }
 .center{
   margin: 0 auto; 
+}
+.text-center{
+  text-align: center;
+}
+.text-bold {
+  font-weight: bold;
+}
+.player {
+  position: relative;
+  border: 5px solid #f00;
+}
+.computer:before {
+  content: " ";
+  position: absolute;
+  z-index: -1;
+  top: 5px;
+  left: 5px;
+  right: 5px;
+  bottom: 5px;
+  border: 5px solid #aaea00;
+}
+.groundtruth:after {
+  content: " ";
+  position: absolute;
+  z-index: -1;
+  top: 12px;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  border: 5px solid #ffea00;
 }
 .demo-card-image.mdl-card.base {
   width: 350px;
