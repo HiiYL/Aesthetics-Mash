@@ -5,6 +5,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
   <link rel="stylesheet" href="https://code.getmdl.io/1.2.1/material.indigo-pink.min.css">
   <script defer src="https://code.getmdl.io/1.2.1/material.min.js"></script>
+  <script   src="https://code.jquery.com/jquery-3.1.1.slim.min.js"   integrity="sha256-/SIrNqv8h6QGKDuNoLGA4iret+kyesCkHGzVUUV0shc="   crossorigin="anonymous"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 </head>
 <body>
@@ -14,19 +15,51 @@
        <div class="mdl-cell mdl-cell--3-col">
         <div class="demo-card-image mdl-card mdl-shadow--2dp base">
           <div class="mdl-card__title mdl-card--expand"></div>
-          <div class="mdl-card__actions">
-            <span class="demo-card-image__filename">{{comparison_set[0].score.values[0]}}</span>
-          </div>
+<!--           <div class="mdl-card__actions">
+            <span class="demo-card-image__filename">{{comparison_set[0].score}}</span>
+          </div> -->
         </div>
       </div>
       <div class="mdl-cell mdl-cell--1-col"></div>
         <div class="mdl-cell mdl-cell--3-col">
         <div class="demo-card-image mdl-card mdl-shadow--2dp compare">
           <div class="mdl-card__title mdl-card--expand"></div>
-          <div class="mdl-card__actions">
-            <span class="demo-card-image__filename">{{comparison_set[1].score.values[0]}}</span>
-          </div>
+<!--           <div class="mdl-card__actions">
+            <span class="demo-card-image__filename">{{comparison_set[1].score}}</span>
+          </div> -->
         </div>
+      </div>
+    {% endif %}
+    {% if correct is defined %}
+      <div class="mdl-cell--4-offset">
+      {% if correct %}
+        <h1>You are RIGHT!</h1>
+      {% else %}
+        <h1>You are Wrong!</h1>
+      {% endif %}
+        <a href="/">
+        <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">
+        Next
+        </button>
+        </a>
+      </div>
+    {% endif %}
+    {% if session.total %}
+      <div class="scoreboard">
+        <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+          <thead>
+            <tr>
+              <th>Right</th>
+              <th>Wrong</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{{session.current}}</td>
+              <td>{{session.total - session.current}}</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     {% endif %}
   </div>
@@ -38,47 +71,39 @@ body {
    /*display: flex;*/
 }
 
-.file_input_div {
-  margin: auto;
-  width: 250px;
-  height: 40px;
-}
-
-.file_input {
-  float: left;
-}
-
-#file_input_text_div {
-  width: 200px;
-  margin-top: -8px;
-  margin-left: 5px;
-}
-
 .none {
   display: none;
 }
-
+.scoreboard {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+}
+.center{
+  margin: 0 auto; 
+}
 
 .demo-card-image.mdl-card.base {
-  width: 256px;
-  height: 256px;
+  width: 350px;
+  height: 350px;
   margin:auto;
   {% if comparison_set %}
-    background: url('{{url_for('test_image_file', filename='{}.jpg'.format(comparison_set[0].index[0]))}}') center / cover;
+    background: url('{{url_for('test_image_file', filename='{}.jpg'.format(comparison_set[0].name))}}') center no-repeat;
   {% endif %}
+  background-size: contain;
 }
-.demo-card-image.mdl-card:hover {
+/*.demo-card-image.mdl-card:hover {
   transition: all 0.5s ease;
   transform: rotate(20deg);
-  
-}
+}*/
 .demo-card-image.mdl-card.compare {
-  width: 256px;
-  height: 256px;
+  width: 350px;
+  height: 350px;
   margin:auto;
   {% if comparison_set %}
-    background: url('{{url_for('test_image_file', filename='{}.jpg'.format(comparison_set[1].index[0]))}}') center / cover;
+    background: url('{{url_for('test_image_file', filename='{}.jpg'.format(comparison_set[1].name))}}') center no-repeat;
   {% endif %}
+  background-size: contain;
 }
 
 
@@ -94,36 +119,32 @@ body {
 }
 </style>
 <script>
-document.getElementById("file").onchange = function() {
-    document.getElementById("form").submit();
-};
+$(".base").click(function() {
+  post('/compare', {base: {{comparison_set[0].name }}, compare: {{ comparison_set[1].name }}, to_compare_better: false })
+});
+$(".compare").click(function() {
+  post('/compare', {base: {{comparison_set[0].name }}, compare: {{ comparison_set[1].name }}, to_compare_better: true })
+});
 
-var fileInputTextDiv = document.getElementById('file_input_text_div');
-var fileInput = document.getElementById('file');
-var fileInputText = document.getElementById('file_input_text');
-fileInput.addEventListener('change', changeInputText);
-fileInput.addEventListener('change', changeState);
+function post(path, parameters) {
+    var form = $('<form></form>');
 
-function changeInputText() {
-  var str = fileInput.value;
-  var i;
-  if (str.lastIndexOf('\\')) {
-    i = str.lastIndexOf('\\') + 1;
-  } else if (str.lastIndexOf('/')) {
-    i = str.lastIndexOf('/') + 1;
-  }
-  fileInputText.value = str.slice(i, str.length);
-}
+    form.attr("method", "post");
+    form.attr("action", path);
 
-function changeState() {
-  if (fileInputText.value.length != 0) {
-    if (!fileInputTextDiv.classList.contains("is-focused")) {
-      fileInputTextDiv.classList.add('is-focused');
-    }
-  } else {
-    if (fileInputTextDiv.classList.contains("is-focused")) {
-      fileInputTextDiv.classList.remove('is-focused');
-    }
-  }
+    $.each(parameters, function(key, value) {
+        var field = $('<input></input>');
+
+        field.attr("type", "hidden");
+        field.attr("name", key);
+        field.attr("value", value);
+
+        form.append(field);
+    });
+
+    // The form needs to be a part of the document in
+    // order for us to be able to submit it.
+    $(document.body).append(form);
+    form.submit();
 }
 </script>

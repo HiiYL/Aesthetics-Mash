@@ -29,7 +29,7 @@ Column 1: Index
 
 Column 2: Image ID 
 
-Columns 3 - 12: Counts of aesthetics ratings on a scale of 1-10. Column 3 
+Columns 3 - 12: Counts of aesth etics ratings on a scale of 1-10. Column 3 
 has counts of ratings of 1 and column 12 has counts of ratings of 10.
 
 Columns 13 - 14: Semantic tag IDs. There are 66 IDs ranging from 1 to 66.
