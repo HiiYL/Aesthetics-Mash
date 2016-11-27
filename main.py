@@ -14,6 +14,11 @@ from model import VGG_19_GAP_functional
 from utils import preprocess_image,deprocess_image
 import cv2
 
+from flask_sqlalchemy import SQLAlchemy
+
+from datetime import datetime
+
+
 UPLOAD_FOLDER = 'uploads/'
 HEATMAP_FOLDER = 'heatmaps/'
 TEST_IMAGES_FOLDER='test_images/'
@@ -23,6 +28,54 @@ app = Flask(__name__, static_url_path='')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['TEST_IMAGES_FOLDER'] = TEST_IMAGES_FOLDER
 app.config['HEATMAP_FOLDER'] = HEATMAP_FOLDER
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
+
+db = SQLAlchemy(app)
+
+
+# from main import db
+# from main import GameSession
+# db.create_all()
+# session = GameSession(24,16,18)
+# db.session.add(session)
+# db.session.commit()
+# GameSession.query.all()
+# class User(db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
+#     username = db.Column(db.String(80), unique=True)
+#     email = db.Column(db.String(120), unique=True)
+
+#     def __init__(self, username, email):
+#         self.username = username
+#         self.email = email
+
+#     def __repr__(self):
+#         return '<User %r>' % self.username
+
+class GameSession(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    games_count = db.Column(db.Integer)
+    player_win_count = db.Column(db.Integer)
+    player_win_rate = db.Column(db.Float)
+    ai_win_count = db.Column(db.Integer)
+    ai_win_rate = db.Column(db.Float)
+    game_date = db.Column(db.DateTime)
+
+    def __init__(self, games_count, player_win_count, ai_win_count, game_date=None):
+        self.games_count = games_count
+        self.player_win_count = player_win_count
+        self.player_win_rate = player_win_count / games_count
+        self.ai_win_count = ai_win_count
+        self.ai_win_rate = ai_win_count / player_win_count
+        if game_date is None:
+            game_date = datetime.utcnow()
+        self.game_date = game_date
+
+    def __repr__(self):
+        return '<Post %r>' % self.id
+
+
+
 
 
 model = VGG_19_GAP_functional("aesthestic_gap_weights_1.h5", heatmap=True)
@@ -45,9 +98,22 @@ def root():
 
     return render_template('index.html', comparison_set=[base, to_compare])
 
+@app.route("/stats")
+def stats():
+    total_session = GameSession.query.count()
+    games_played_percentile = 100 * GameSession.query.filter(GameSession.games_count > session['total']).count() / total_session
+    games_won_percentile = 100 * GameSession.query.filter(GameSession.player_win_count > session['current']).count() / total_session
 
+    win_rate = session['current'] / session['total']
+    games_winrate_percentile = 100 * GameSession.query.filter(GameSession.player_win_rate > win_rate).count() / total_session
+
+    winrate_against_ai_percentile = 100 * GameSession.query.filter(GameSession.ai_win_rate > win_rate).count() / total_session
+    return render_template('stats.html', args=[games_played_percentile,games_won_percentile,win_rate,games_winrate_percentile,winrate_against_ai_percentile])
 @app.route("/reset")
 def reset():
+    game_session = GameSession(session['total'],session['current'],session['cpu_current'])
+    db.session.add(game_session)
+    db.session.commit()
     session.clear()
     return redirect(url_for('root'))
 

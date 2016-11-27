@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Hello World!</title>
+  <title>Aesthetics Mash</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
   <link rel="stylesheet" href="https://code.getmdl.io/1.2.1/material.indigo-pink.min.css">
   <script defer src="https://code.getmdl.io/1.2.1/material.min.js"></script>
@@ -9,66 +9,62 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 </head>
 <body>
-  <div class="mdl-grid">
-    {% if comparison_set is defined %}
-    <div class="mdl-cell mdl-cell--2-col"></div>
-    <div class="mdl-cell mdl-cell--3-col">
-      <div class="demo-card-image mdl-card mdl-shadow--2dp base">
-        <div class="mdl-card__title mdl-card--expand"></div>
-<!--           <div class="mdl-card__actions">
-          <span class="demo-card-image__filename">{{comparison_set[0].score}}</span>
-        </div> -->
+  {% if comparison_set is defined %}
+    <div class="mdl-grid">
+      <div class="mdl-cell mdl-cell--3-col mdl-cell--2-offset">
+        <div class="demo-card-image mdl-card mdl-shadow--2dp base">
+          <div class="mdl-card__title mdl-card--expand"></div>
+  <!--           <div class="mdl-card__actions">
+            <span class="demo-card-image__filename">{{comparison_set[0].score}}</span>
+          </div> -->
+        </div>
+  <!--       {% if cpu_confidence is defined %}
+        <h5>Average Score  : {{ comparison_set[0].score }} </h5>
+        <h5>CPU Confidence : {{ cpu_confidence[0] * 10 }}</h5>
+        {% endif %} -->
       </div>
-<!--       {% if cpu_confidence is defined %}
-      <h5>Average Score  : {{ comparison_set[0].score }} </h5>
-      <h5>CPU Confidence : {{ cpu_confidence[0] * 10 }}</h5>
-      {% endif %} -->
-    </div>
-    <div class="mdl-cell mdl-cell--1-col"></div>
-    <div class="mdl-cell mdl-cell--3-col">
-      <div class="demo-card-image mdl-card mdl-shadow--2dp compare">
-        <div class="mdl-card__title mdl-card--expand"></div>
-<!--           <div class="mdl-card__actions">
-          <span class="demo-card-image__filename">{{comparison_set[1].score}}</span>
-        </div> -->
+      <div class="mdl-cell mdl-cell--3-col mdl-cell--1-offset">
+        <div class="demo-card-image mdl-card mdl-shadow--2dp compare">
+          <div class="mdl-card__title mdl-card--expand"></div>
+  <!--           <div class="mdl-card__actions">
+            <span class="demo-card-image__filename">{{comparison_set[1].score}}</span>
+          </div> -->
+        </div>
+  <!--       {% if cpu_confidence is defined %}
+        <h5>Average Score  : {{ comparison_set[1].score }} </h5>
+        <h5>CPU Confidence :{{cpu_confidence[1] * 10 }}</h5>
+        {% endif %} -->
       </div>
-<!--       {% if cpu_confidence is defined %}
-      <h5>Average Score  : {{ comparison_set[1].score }} </h5>
-      <h5>CPU Confidence :{{cpu_confidence[1] * 10 }}</h5>
-      {% endif %} -->
     </div>
-    {% endif %}
-  </div>
-  <div class="mdl-grid">
-    {% if cpu_confidence is defined %}
-    <div class="mdl-cell mdl-cell--2-col"></div>
-    <div class="mdl-cell mdl-cell--3-col">
-      <div class="demo-card-image mdl-card mdl-shadow--2dp base heatmap">
-        <div class="mdl-card__title mdl-card--expand"></div>
-<!--           <div class="mdl-card__actions">
-          <span class="demo-card-image__filename">{{comparison_set[0].score}}</span>
-        </div> -->
+  {% endif %}
+  {% if cpu_confidence is defined %}
+    <div class="mdl-grid">
+      <div class="mdl-cell mdl-cell--3-col mdl-cell--2-offset">
+        <div class="demo-card-image mdl-card mdl-shadow--2dp base heatmap">
+          <div class="mdl-card__title mdl-card--expand"></div>
+  <!--           <div class="mdl-card__actions">
+            <span class="demo-card-image__filename">{{comparison_set[0].score}}</span>
+          </div> -->
+        </div>
+        {% if cpu_confidence is defined %}
+        <h5>Average Score  : {{ comparison_set[0].score | round(2) }} </h5>
+        <h5>CPU Confidence : {{ (cpu_confidence[0] * 10) | round(2) }}</h5>
+        {% endif %}
       </div>
-      {% if cpu_confidence is defined %}
-      <h5>Average Score  : {{ comparison_set[0].score | round(2) }} </h5>
-      <h5>CPU Confidence : {{ (cpu_confidence[0] * 10) | round(2) }}</h5>
-      {% endif %}
-    </div>
-    <div class="mdl-cell mdl-cell--1-col"></div>
-    <div class="mdl-cell mdl-cell--3-col">
-      <div class="demo-card-image mdl-card mdl-shadow--2dp compare heatmap">
-        <div class="mdl-card__title mdl-card--expand"></div>
-<!--           <div class="mdl-card__actions">
-          <span class="demo-card-image__filename">{{comparison_set[1].score}}</span>
-        </div> -->
+      <div class="mdl-cell mdl-cell--3-col mdl-cell--1-offset">
+        <div class="demo-card-image mdl-card mdl-shadow--2dp compare heatmap">
+          <div class="mdl-card__title mdl-card--expand"></div>
+  <!--           <div class="mdl-card__actions">
+            <span class="demo-card-image__filename">{{comparison_set[1].score}}</span>
+          </div> -->
+        </div>
+        {% if cpu_confidence is defined %}
+        <h5>Average Score  : {{ comparison_set[1].score | round(2) }} </h5>
+        <h5>CPU Confidence : {{ (cpu_confidence[1] * 10) | round(2) }}</h5>
+        {% endif %}
       </div>
-      {% if cpu_confidence is defined %}
-      <h5>Average Score  : {{ comparison_set[1].score | round(2) }} </h5>
-      <h5>CPU Confidence : {{ (cpu_confidence[1] * 10) | round(2) }}</h5>
-      {% endif %}
     </div>
-    {% endif %}
-  </div>
+  {% endif %}
   <div class="mdl-grid">
     {% if correct is defined %}
     <div class="mdl-cell--4-offset">
@@ -102,9 +98,9 @@
           </tr>
         </tbody>
       </table>
-      <a href="/reset">
+      <a href="/stats">
         <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">
-          Reset
+          Done
         </button>
       </a>
     </div>
@@ -129,7 +125,6 @@
 .center{
   margin: 0 auto; 
 }
-
 .demo-card-image.mdl-card.base {
   width: 350px;
   height: 350px;
