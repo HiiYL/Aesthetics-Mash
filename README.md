@@ -5,10 +5,14 @@ Put your aesthetic tastes to the test!
 [<img src="https://cloud.githubusercontent.com/assets/7908951/20647450/89c10b10-b4cf-11e6-99d2-791575f21258.png" width=858 height=300>](wow)
 
 ## Installation
-TODO: Describe the installation process
+1. (Optional) Fork the repository.
+2. Clone the repository.
+3. ` pip install -r requirements.txt `
+4. Download test_images.tar.gz. ( Manually for now, bash script will be provided later )
+5. Download latest model snapshot.
 
 ## Usage
-TODO: Write usage instructions
+Once all requirements have been satisfied, use ` python main.py ` to start.
 
 ## Contributing
 1. Fork it!
