@@ -3,6 +3,8 @@ Put your aesthetic tastes to the test!
 
 ## Screenshots
 [<img src="https://cloud.githubusercontent.com/assets/7908951/20647450/89c10b10-b4cf-11e6-99d2-791575f21258.png" width=858 height=300>](wow)
+[<img src="https://cloud.githubusercontent.com/assets/7908951/20649298/4ef4613a-b4f7-11e6-9315-4d370ef07193.png" width=858 height=447>](wow)
+
 
 ## Installation
 1. (Optional) Fork the repository.
