@@ -8,8 +8,12 @@ Put your aesthetic tastes to the test!
 1. (Optional) Fork the repository.
 2. Clone the repository.
 3. ` pip install -r requirements.txt `
-4. Download test_images.tar.gz. ( Manually for now, bash script will be provided later )
+4. Download test_images.tar.gz ( Manually for now, bash script will be provided later )
+
+   https://drive.google.com/open?id=0B0wpQxTjT1jOTEl5Q2ZCV05tSzQ
 5. Download latest model snapshot.
+
+  https://drive.google.com/open?id=0B0wpQxTjT1jOYTFXUXBsc3FueWs
 
 ## Usage
 Once all requirements have been satisfied, use ` python main.py ` to start.
