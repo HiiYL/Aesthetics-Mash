@@ -9,5 +9,7 @@ uploads/
 
 test_images/*
 
+*.tar.gz
+
 
 !test_images/download.sh
