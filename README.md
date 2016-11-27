@@ -1,6 +1,9 @@
 # Aesthetics Mash
 Put your aesthetic tastes to the test!
 
+## Screenshots
+[<img src="https://cloud.githubusercontent.com/assets/7908951/20647450/89c10b10-b4cf-11e6-99d2-791575f21258.png" width=858 height=300>](wow)
+
 ## Installation
 TODO: Describe the installation process
 
