@@ -12,24 +12,64 @@
   <div class="mdl-grid">
     {% if comparison_set is defined %}
     <div class="mdl-cell mdl-cell--2-col"></div>
-       <div class="mdl-cell mdl-cell--3-col">
-        <div class="demo-card-image mdl-card mdl-shadow--2dp base">
-          <div class="mdl-card__title mdl-card--expand"></div>
+    <div class="mdl-cell mdl-cell--3-col">
+    <div class="demo-card-image mdl-card mdl-shadow--2dp base">
+      <div class="mdl-card__title mdl-card--expand"></div>
 <!--           <div class="mdl-card__actions">
-            <span class="demo-card-image__filename">{{comparison_set[0].score}}</span>
-          </div> -->
-        </div>
+          <span class="demo-card-image__filename">{{comparison_set[0].score}}</span>
+        </div> -->
       </div>
-      <div class="mdl-cell mdl-cell--1-col"></div>
-        <div class="mdl-cell mdl-cell--3-col">
-        <div class="demo-card-image mdl-card mdl-shadow--2dp compare">
-          <div class="mdl-card__title mdl-card--expand"></div>
+<!--       {% if cpu_confidence is defined %}
+      <h5>Average Score  : {{ comparison_set[0].score }} </h5>
+      <h5>CPU Confidence : {{ cpu_confidence[0] * 10 }}</h5>
+      {% endif %} -->
+    </div>
+    <div class="mdl-cell mdl-cell--1-col"></div>
+    <div class="mdl-cell mdl-cell--3-col">
+      <div class="demo-card-image mdl-card mdl-shadow--2dp compare">
+        <div class="mdl-card__title mdl-card--expand"></div>
 <!--           <div class="mdl-card__actions">
-            <span class="demo-card-image__filename">{{comparison_set[1].score}}</span>
-          </div> -->
-        </div>
+          <span class="demo-card-image__filename">{{comparison_set[1].score}}</span>
+        </div> -->
       </div>
+<!--       {% if cpu_confidence is defined %}
+      <h5>Average Score  : {{ comparison_set[1].score }} </h5>
+      <h5>CPU Confidence :{{cpu_confidence[1] * 10 }}</h5>
+      {% endif %} -->
+    </div>
     {% endif %}
+  </div>
+  <div class="mdl-grid">
+    {% if cpu_confidence is defined %}
+    <div class="mdl-cell mdl-cell--2-col"></div>
+    <div class="mdl-cell mdl-cell--3-col">
+    <div class="demo-card-image mdl-card mdl-shadow--2dp base heatmap">
+      <div class="mdl-card__title mdl-card--expand"></div>
+<!--           <div class="mdl-card__actions">
+          <span class="demo-card-image__filename">{{comparison_set[0].score}}</span>
+        </div> -->
+      </div>
+      {% if cpu_confidence is defined %}
+      <h5>Average Score  : {{ comparison_set[0].score | round(2) }} </h5>
+      <h5>CPU Confidence : {{ (cpu_confidence[0] * 10) | round(2) }}</h5>
+      {% endif %}
+    </div>
+    <div class="mdl-cell mdl-cell--1-col"></div>
+    <div class="mdl-cell mdl-cell--3-col">
+      <div class="demo-card-image mdl-card mdl-shadow--2dp compare heatmap">
+        <div class="mdl-card__title mdl-card--expand"></div>
+<!--           <div class="mdl-card__actions">
+          <span class="demo-card-image__filename">{{comparison_set[1].score}}</span>
+        </div> -->
+      </div>
+      {% if cpu_confidence is defined %}
+      <h5>Average Score  : {{ comparison_set[1].score | round(2) }} </h5>
+      <h5>CPU Confidence : {{ (cpu_confidence[1] * 10) | round(2) }}</h5>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+  <div class="mdl-grid">
     {% if correct is defined %}
       <div class="mdl-cell--4-offset">
       {% if correct %}
@@ -49,17 +89,24 @@
         <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
           <thead>
             <tr>
-              <th>Right</th>
-              <th>Wrong</th>
+              <th>Player</th>
+              <th>CPU</th>
+              <th>Rounds</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td>{{session.current}}</td>
-              <td>{{session.total - session.current}}</td>
+              <td>{{session.cpu_current}}</td>
+              <td>{{session.total}}</td>
             </tr>
           </tbody>
         </table>
+        <a href="/reset">
+        <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">
+        Reset
+        </button>
+        </a>
       </div>
     {% endif %}
   </div>
@@ -92,16 +139,30 @@ body {
   {% endif %}
   background-size: contain;
 }
-/*.demo-card-image.mdl-card:hover {
-  transition: all 0.5s ease;
-  transform: rotate(20deg);
-}*/
 .demo-card-image.mdl-card.compare {
   width: 350px;
   height: 350px;
   margin:auto;
   {% if comparison_set %}
     background: url('{{url_for('test_image_file', filename='{}.jpg'.format(comparison_set[1].name))}}') center no-repeat;
+  {% endif %}
+  background-size: contain;
+}
+.demo-card-image.mdl-card.base.heatmap {
+  width: 350px;
+  height: 350px;
+  margin:auto;
+  {% if comparison_set %}
+    background: url('{{url_for('heatmap_file', filename='{}.jpg'.format(comparison_set[0].name))}}') center no-repeat;
+  {% endif %}
+  background-size: contain;
+}
+.demo-card-image.mdl-card.compare.heatmap {
+  width: 350px;
+  height: 350px;
+  margin:auto;
+  {% if comparison_set %}
+    background: url('{{url_for('heatmap_file', filename='{}.jpg'.format(comparison_set[1].name))}}') center no-repeat;
   {% endif %}
   background-size: contain;
 }
@@ -120,10 +181,10 @@ body {
 </style>
 <script>
 $(".base").click(function() {
-  post('/compare', {base: {{comparison_set[0].name }}, compare: {{ comparison_set[1].name }}, to_compare_better: false })
+  post('/compare', {base: {{comparison_set[0].name }}, compare: {{ comparison_set[1].name }}, selected: 0 })
 });
 $(".compare").click(function() {
-  post('/compare', {base: {{comparison_set[0].name }}, compare: {{ comparison_set[1].name }}, to_compare_better: true })
+  post('/compare', {base: {{comparison_set[0].name }}, compare: {{ comparison_set[1].name }}, selected: 1 })
 });
 
 function post(path, parameters) {

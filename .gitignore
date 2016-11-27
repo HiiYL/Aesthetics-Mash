@@ -11,5 +11,8 @@ test_images/*
 
 *.tar.gz
 
+*.jpg
+*.png
+
 
 !test_images/download.sh
