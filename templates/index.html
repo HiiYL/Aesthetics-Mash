@@ -13,8 +13,8 @@
     {% if comparison_set is defined %}
     <div class="mdl-cell mdl-cell--2-col"></div>
     <div class="mdl-cell mdl-cell--3-col">
-    <div class="demo-card-image mdl-card mdl-shadow--2dp base">
-      <div class="mdl-card__title mdl-card--expand"></div>
+      <div class="demo-card-image mdl-card mdl-shadow--2dp base">
+        <div class="mdl-card__title mdl-card--expand"></div>
 <!--           <div class="mdl-card__actions">
           <span class="demo-card-image__filename">{{comparison_set[0].score}}</span>
         </div> -->
@@ -43,8 +43,8 @@
     {% if cpu_confidence is defined %}
     <div class="mdl-cell mdl-cell--2-col"></div>
     <div class="mdl-cell mdl-cell--3-col">
-    <div class="demo-card-image mdl-card mdl-shadow--2dp base heatmap">
-      <div class="mdl-card__title mdl-card--expand"></div>
+      <div class="demo-card-image mdl-card mdl-shadow--2dp base heatmap">
+        <div class="mdl-card__title mdl-card--expand"></div>
 <!--           <div class="mdl-card__actions">
           <span class="demo-card-image__filename">{{comparison_set[0].score}}</span>
         </div> -->
@@ -71,54 +71,54 @@
   </div>
   <div class="mdl-grid">
     {% if correct is defined %}
-      <div class="mdl-cell--4-offset">
+    <div class="mdl-cell--4-offset">
       {% if correct %}
-        <h1>You are RIGHT!</h1>
+      <h1>You are RIGHT!</h1>
       {% else %}
-        <h1>You are Wrong!</h1>
+      <h1>You are Wrong!</h1>
       {% endif %}
-        <a href="/">
+      <a href="/">
         <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">
-        Next
+          Next
         </button>
-        </a>
-      </div>
+      </a>
+    </div>
     {% endif %}
     {% if session.total %}
-      <div class="scoreboard">
-        <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-          <thead>
-            <tr>
-              <th>Player</th>
-              <th>CPU</th>
-              <th>Rounds</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>{{session.current}}</td>
-              <td>{{session.cpu_current}}</td>
-              <td>{{session.total}}</td>
-            </tr>
-          </tbody>
-        </table>
-        <a href="/reset">
+    <div class="scoreboard">
+      <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+        <thead>
+          <tr>
+            <th>Player</th>
+            <th>CPU</th>
+            <th>Rounds</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{session.current}}</td>
+            <td>{{session.cpu_current}}</td>
+            <td>{{session.total}}</td>
+          </tr>
+        </tbody>
+      </table>
+      <a href="/reset">
         <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">
-        Reset
+          Reset
         </button>
-        </a>
-      </div>
+      </a>
+    </div>
     {% endif %}
   </div>
 
 </body>
 </html>
 <style>
-body {
+  body {
    /*display: flex;*/
-}
+ }
 
-.none {
+ .none {
   display: none;
 }
 .scoreboard {
@@ -135,7 +135,7 @@ body {
   height: 350px;
   margin:auto;
   {% if comparison_set %}
-    background: url('{{url_for('test_image_file', filename='{}.jpg'.format(comparison_set[0].name))}}') center no-repeat;
+  background: url('{{url_for('test_image_file', filename='{}.jpg'.format(comparison_set[0].name))}}') center no-repeat;
   {% endif %}
   background-size: contain;
 }
@@ -144,7 +144,7 @@ body {
   height: 350px;
   margin:auto;
   {% if comparison_set %}
-    background: url('{{url_for('test_image_file', filename='{}.jpg'.format(comparison_set[1].name))}}') center no-repeat;
+  background: url('{{url_for('test_image_file', filename='{}.jpg'.format(comparison_set[1].name))}}') center no-repeat;
   {% endif %}
   background-size: contain;
 }
@@ -153,7 +153,7 @@ body {
   height: 350px;
   margin:auto;
   {% if comparison_set %}
-    background: url('{{url_for('heatmap_file', filename='{}.jpg'.format(comparison_set[0].name))}}') center no-repeat;
+  background: url('{{url_for('heatmap_file', filename='{}.jpg'.format(comparison_set[0].name))}}') center no-repeat;
   {% endif %}
   background-size: contain;
 }
@@ -162,7 +162,7 @@ body {
   height: 350px;
   margin:auto;
   {% if comparison_set %}
-    background: url('{{url_for('heatmap_file', filename='{}.jpg'.format(comparison_set[1].name))}}') center no-repeat;
+  background: url('{{url_for('heatmap_file', filename='{}.jpg'.format(comparison_set[1].name))}}') center no-repeat;
   {% endif %}
   background-size: contain;
 }
@@ -180,32 +180,32 @@ body {
 }
 </style>
 <script>
-$(".base").click(function() {
-  post('/compare', {base: {{comparison_set[0].name }}, compare: {{ comparison_set[1].name }}, selected: 0 })
-});
-$(".compare").click(function() {
-  post('/compare', {base: {{comparison_set[0].name }}, compare: {{ comparison_set[1].name }}, selected: 1 })
-});
+  $(".base").click(function() {
+    post('/compare', {base: {{comparison_set[0].name }}, compare: {{ comparison_set[1].name }}, selected: 0 })
+  });
+  $(".compare").click(function() {
+    post('/compare', {base: {{comparison_set[0].name }}, compare: {{ comparison_set[1].name }}, selected: 1 })
+  });
 
-function post(path, parameters) {
+  function post(path, parameters) {
     var form = $('<form></form>');
 
     form.attr("method", "post");
     form.attr("action", path);
 
     $.each(parameters, function(key, value) {
-        var field = $('<input></input>');
+      var field = $('<input></input>');
 
-        field.attr("type", "hidden");
-        field.attr("name", key);
-        field.attr("value", value);
+      field.attr("type", "hidden");
+      field.attr("name", key);
+      field.attr("value", value);
 
-        form.append(field);
+      form.append(field);
     });
 
     // The form needs to be a part of the document in
     // order for us to be able to submit it.
     $(document.body).append(form);
     form.submit();
-}
+  }
 </script>
