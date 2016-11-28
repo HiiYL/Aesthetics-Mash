@@ -143,11 +143,11 @@ def compare():
 
     print(correct)
 
-    try:
+    if session.get('current') and session.get('total'):
         if correct:
-          session['current'] += 1
+            session['current'] += 1
         session['total'] += 1
-    except KeyError:
+    else:
         session['current'] = 1 if correct else 0
         session['total'] = 1
 
@@ -181,10 +181,11 @@ def compare():
     cpu_winner_predict = np.argmax(good_class_confidence)
     cpu_correct = (winner == cpu_winner_predict)
 
-    try:
+    
+    if session.get('cpu_current'):
         if cpu_correct:
             session['cpu_current'] += 1
-    except:
+    else:
         session['cpu_current'] = 1 if cpu_correct else 0
 
     conv_outputs = out[1]
@@ -232,8 +233,8 @@ def test_image_file(filename):
     filename)
 
 if __name__ == "__main__":
-    app.debug = True
+    # app.debug = True
     app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
     # print("YOUR IP ADDRESS IS: {0}".format(ni.ifaddresses('en0')[2][0]['addr']))
-    app.run()
+    app.run(host='0.0.0.0')
     # app.run()
