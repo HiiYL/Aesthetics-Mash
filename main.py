@@ -7,8 +7,6 @@ import pandas as pd
 from pandas import HDFStore
 import numpy as np
 
-import netifaces as ni
-
 
 from model import VGG_19_GAP_functional
 from utils import preprocess_image,deprocess_image
@@ -17,6 +15,8 @@ import cv2
 from flask_sqlalchemy import SQLAlchemy
 
 from datetime import datetime
+
+import tempfile
 
 
 UPLOAD_FOLDER = 'uploads/'
@@ -28,7 +28,8 @@ app = Flask(__name__, static_url_path='')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['TEST_IMAGES_FOLDER'] = TEST_IMAGES_FOLDER
 app.config['HEATMAP_FOLDER'] = HEATMAP_FOLDER
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(
+    tempfile.gettempdir(), 'test.db')
 
 delta = 1.5
 
