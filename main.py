@@ -108,7 +108,8 @@ def root():
 @app.route("/stats")
 def stats():
     total_session = GameSession.query.count()
-    total_session = 1 if (total_session == 0)
+    if (total_session == 0):
+        total_session = 1 
 
     games_played_percentile = 100 * GameSession.query.filter(GameSession.games_count > session['total']).count() / total_session
     games_won_percentile = 100 * GameSession.query.filter(GameSession.player_win_count > session['current']).count() / total_session
