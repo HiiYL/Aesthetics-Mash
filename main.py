@@ -36,6 +36,7 @@ db = SQLAlchemy(app)
 
 # To read from sqlite3 database
 # import sqlite3
+# import pandas as pd
 # cnx = sqlite3.connect('/tmp/test.db')
 # pd.read_sql('SELECT * from game_session',cnx)
 
@@ -97,8 +98,6 @@ store = HDFStore('dataset/labels.h5')
 ava_table = store['labels_test']
 @app.route('/', methods=['GET', 'POST'])
 def root():
-
-
     base = ava_table.ix[np.random.choice(ava_table.index, 1)[0]]
     to_compare_df = ava_table.ix[abs(ava_table['score'] - base.score) > delta]
     to_compare = to_compare_df.ix[np.random.choice(to_compare_df.index, 1)[0]]
@@ -149,26 +148,11 @@ def compare():
           session['current'] += 1
         session['total'] += 1
     except KeyError:
-        session['current'] = 1 if winner else 0
+        session['current'] = 1 if correct else 0
         session['total'] = 1
-
-    ########
-    #
-    #  States
-    #  0 - Both PC and CPU wrong
-    #  1 - PC right, CPU wrong
-    #  2 - PC wrong, CPU right
-    #  3 - PC right, CPU right
-    #
-    ########
-
-    # 937511
-    # 10017
 
     base_image_path = 'test_images/{}.jpg'.format(base.name)
     compare_image_path = 'test_images/{}.jpg'.format(to_compare.name)
-
-    # print(image_path)
 
     heights = []
     widths = []
@@ -215,8 +199,6 @@ def compare():
                 model, heights[i], widths[i], compare_img_original, compare_im, '{}.jpg'.format(to_compare.name))
 
     return render_template('index.html', comparison_set=[base, to_compare],selected=selected,cpu_selected=cpu_winner_predict, groundtruth=winner, correct=correct, cpu_confidence=good_class_confidence)
-
-
 
 def process_and_generate_heatmap(conv_output, model, height, width, img_original, img, img_name):
     cam = np.zeros(dtype = np.float32, shape = conv_output.shape[1:3])

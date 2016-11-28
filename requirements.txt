@@ -1,2 +1,7 @@
 Flask-Session
 Flask-SQLAlchemy
+werkzeug
+netifaces
+pandas
+flask
+opencv-python
