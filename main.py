@@ -127,25 +127,55 @@ def reset():
     session.clear()
     return redirect(url_for('root'))
 
+
+class ImageContainer():
+    def __init__(self):
+        self.images = []
+
+    def addImage(self, index):
+
+        image = Image(index)
+        self.images.append(image)
+
+    def getImage(self,i):
+        return self.images[i]
+
+    def getWinner(self):
+        return np.argmax([image.image_details.score for image in self.images])
+
+    def getScores(self):
+        return [ image.image_details.score for image in self.images ]
+
+    def getImageDetails(self):
+        return [image.image_details for image in self.images ]
+
+    def getStackedImages(self):
+        return np.vstack([image.image_processed for image in self.images])
+
+
+class Image():
+    def __init__(self, index):
+        self.image_details = ava_table.ix[index]
+        self.image_path = 'test_images/{}.jpg'.format(self.image_details.name)
+        self.image = cv2.imread(self.image_path)
+        self.width, self.height, _ = self.image.shape
+        self.image_processed = preprocess_image(self.image)
+
+
 @app.route('/compare', methods=['POST'])
 def compare():
     values = request.values
-    base = values['base']
-    to_compare = values['compare']
-
+    base = int(values['base']) ## get image index argument
+    to_compare = int(values['compare']) ## get image index argument
     selected = int(values['selected'])
 
-    base = ava_table.ix[int(base)]
-    to_compare = ava_table.ix[int(to_compare)]
+    img_container = ImageContainer()
+    img_container.addImage(base)
+    img_container.addImage(to_compare)
 
-    winner = np.argmax([base.score,to_compare.score])
-
-    print(winner)
-    print(selected)
+    winner = img_container.getWinner()
 
     correct = (winner == selected)
-
-    print(correct)
 
     if session.get('current') and session.get('total'):
         if correct:
@@ -155,30 +185,7 @@ def compare():
         session['current'] = 1 if correct else 0
         session['total'] = 1
 
-    base_image_path = 'test_images/{}.jpg'.format(base.name)
-    compare_image_path = 'test_images/{}.jpg'.format(to_compare.name)
-
-    heights = []
-    widths = []
-
-    base_img_original = cv2.imread(base_image_path)
-    width, height, _ = base_img_original.shape
-    base_im = preprocess_image(base_img_original)
-
-
-    widths.append(width)
-    heights.append(height)
-
-    compare_img_original = cv2.imread(compare_image_path)
-    width, height, _ = compare_img_original.shape
-    compare_im = preprocess_image(compare_img_original)
-
-    widths.append(width)
-    heights.append(height)
-
-    stacked_im = np.vstack([base_im, compare_im])
-
-    out = model.predict(stacked_im)
+    out = model.predict(img_container.getStackedImages())
 
     scores = out[0]
     good_class_confidence = scores[:,1]
@@ -196,14 +203,17 @@ def compare():
 
     for i in range(2):
         conv_output = conv_outputs[i]
-        if i == 0:
-            process_and_generate_heatmap(conv_output, 
-                model, heights[i], widths[i], base_img_original, base_im, '{}.jpg'.format(base.name))
-        elif i == 1:
-            process_and_generate_heatmap(conv_output, 
-                model, heights[i], widths[i], compare_img_original, compare_im, '{}.jpg'.format(to_compare.name))
+        image = img_container.getImage(i)
 
-    return render_template('index.html', comparison_set=[base, to_compare],selected=selected,cpu_selected=cpu_winner_predict, groundtruth=winner, correct=correct, cpu_confidence=good_class_confidence)
+        process_and_generate_heatmap(conv_output, model,image.height,
+         image.width, image.image, image.image_processed,
+          '{}.jpg'.format(image.image_details.name)  )
+
+    comparison_set = img_container.getImageDetails()
+    return render_template('index.html',
+     comparison_set=comparison_set,selected=selected,
+     cpu_selected=cpu_winner_predict, groundtruth=winner,
+      correct=correct, cpu_confidence=good_class_confidence)
 
 def process_and_generate_heatmap(conv_output, model, height, width, img_original, img, img_name):
     cam = np.zeros(dtype = np.float32, shape = conv_output.shape[1:3])
@@ -237,7 +247,7 @@ def test_image_file(filename):
     filename)
 
 if __name__ == "__main__":
-    # app.debug = True
+    app.debug = True
     app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
     # print("YOUR IP ADDRESS IS: {0}".format(ni.ifaddresses('en0')[2][0]['addr']))
     app.run(host='0.0.0.0')
