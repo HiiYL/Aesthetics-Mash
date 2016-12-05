@@ -100,7 +100,7 @@ ava_table = store['labels_test']
 @app.route('/', methods=['GET', 'POST'])
 def root():
     base = ava_table.ix[np.random.choice(ava_table.index, 1)[0]]
-    to_compare_df = ava_table.ix[abs(ava_table['score'] - base.score) > delta]
+    to_compare_df = ava_table.ix[abs(abs(ava_table['score'] - base.score) - delta) < .1 ]
     to_compare = to_compare_df.ix[np.random.choice(to_compare_df.index, 1)[0]]
 
     return render_template('index.html', comparison_set=[base, to_compare])
@@ -247,7 +247,7 @@ def test_image_file(filename):
     filename)
 
 if __name__ == "__main__":
-    app.debug = True
+    # app.debug = True
     app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
     # print("YOUR IP ADDRESS IS: {0}".format(ni.ifaddresses('en0')[2][0]['addr']))
     app.run(host='0.0.0.0')
