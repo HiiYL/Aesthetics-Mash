@@ -32,14 +32,14 @@
          {{'computer' if cpu_selected == 1}}">
           <div class="mdl-card__title mdl-card--expand"></div>
         </div>
-        {% if cpu_confidence is defined %}
+<!--         {% if cpu_confidence is defined %}
         <h5 class="{{'text-bold' if groundtruth == 1 }}">
         Average Score  : {{ comparison_set[1].score | round(2) }}
         </h5>
         <h5 class="{{'text-bold' if cpu_selected == 1 }}">
         CPU Confidence : {{ (cpu_confidence[1] * 10) | round(2) }}
         </h5>
-        {% endif %}
+        {% endif %} -->
       </div>
     </div>
   {% elif comparison_set is defined %}
