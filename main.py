@@ -31,36 +31,11 @@ app.config['HEATMAP_FOLDER'] = HEATMAP_FOLDER
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(
     tempfile.gettempdir(), 'test.db')
 
-delta = 1.5
+default_delta = 2.0
+
+difficulties_delta = [2.0, 1.5, 0.5]
 
 db = SQLAlchemy(app)
-
-# To read from sqlite3 database
-# import sqlite3
-# import pandas as pd
-# cnx = sqlite3.connect('/tmp/test.db')
-# pd.read_sql('SELECT * from game_session',cnx)
-
-
-# from main import db
-# from main import GameSession
-# db.drop_all()
-# db.create_all()
-# game_session = GameSession(24,16,18,delta)
-# db.session.add(game_session)
-# db.session.commit()
-# GameSession.query.all()
-# class User(db.Model):
-#     id = db.Column(db.Integer, primary_key=True)
-#     username = db.Column(db.String(80), unique=True)
-#     email = db.Column(db.String(120), unique=True)
-
-#     def __init__(self, username, email):
-#         self.username = username
-#         self.email = email
-
-#     def __repr__(self):
-#         return '<User %r>' % self.username
 
 class GameSession(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -84,7 +59,9 @@ class GameSession(db.Model):
         self.game_date = game_date
 
     def __repr__(self):
-        return '<Post {}> {} {} {} {} {}'.format(self.id, self.games_count,self.player_win_count, self.ai_win_count,self.ai_win_rate, self.delta)
+        return '<Post {}> {} {} {} {} {}'.format(
+            self.id, self.games_count,self.player_win_count,
+             self.ai_win_count,self.ai_win_rate, self.delta)
 
 
 model = VGG_19_GAP_functional("aesthestic_gap_weights_1.h5", heatmap=True)
@@ -97,11 +74,18 @@ def allowed_file(filename):
 ava_path = "dataset/AVA/data/"
 store = HDFStore('dataset/labels.h5')
 ava_table = store['labels_test']
+
+
 @app.route('/', methods=['GET', 'POST'])
 def root():
+    if not session.get('delta'):
+        session['delta'] = default_delta
+
     base = ava_table.ix[np.random.choice(ava_table.index, 1)[0]]
-    to_compare_df = ava_table.ix[abs(ava_table['score'] - base.score) > delta]
+    to_compare_df = ava_table.ix[abs(abs(ava_table['score'] - base.score) - session['delta']) < .1 ]
     to_compare = to_compare_df.ix[np.random.choice(to_compare_df.index, 1)[0]]
+
+
 
     return render_template('index.html', comparison_set=[base, to_compare])
 
@@ -111,17 +95,25 @@ def stats():
     if (total_session == 0):
         total_session = 1 
 
-    games_played_percentile = 100 * GameSession.query.filter(GameSession.games_count > session['total']).count() / total_session
-    games_won_percentile = 100 * GameSession.query.filter(GameSession.player_win_count > session['current']).count() / total_session
+    games_played_percentile = 100 * GameSession.query.filter(
+        GameSession.games_count > session['total']).count() / total_session
+    games_won_percentile = 100 * GameSession.query.filter(
+        GameSession.player_win_count > session['current']).count() / total_session
 
     win_rate = session['current'] / session['total']
-    games_winrate_percentile = 100 * GameSession.query.filter(GameSession.player_win_rate > win_rate).count() / total_session
+    games_winrate_percentile = 100 * GameSession.query.filter(
+        GameSession.player_win_rate > win_rate).count() / total_session
 
-    winrate_against_ai_percentile = 100 * GameSession.query.filter(GameSession.ai_win_rate > win_rate).count() / total_session
-    return render_template('stats.html', args=[games_played_percentile,games_won_percentile,win_rate,games_winrate_percentile,winrate_against_ai_percentile])
+    winrate_against_ai_percentile = 100 * GameSession.query.filter(
+        GameSession.ai_win_rate > win_rate).count() / total_session
+    
+    return render_template('stats.html', args=[games_played_percentile,
+        games_won_percentile,win_rate,games_winrate_percentile,winrate_against_ai_percentile])
+
+
 @app.route("/reset")
 def reset():
-    game_session = GameSession(session['total'],session['current'],session['cpu_current'], delta)
+    game_session = GameSession(session['total'],session['current'],session['cpu_current'], session['delta'])
     db.session.add(game_session)
     db.session.commit()
     session.clear()
@@ -133,7 +125,6 @@ class ImageContainer():
         self.images = []
 
     def addImage(self, index):
-
         image = Image(index)
         self.images.append(image)
 
@@ -160,6 +151,14 @@ class Image():
         self.image = cv2.imread(self.image_path)
         self.width, self.height, _ = self.image.shape
         self.image_processed = preprocess_image(self.image)
+
+@app.route('/change_difficulty', methods=['POST'])
+def change_difficulty():
+    values = request.values
+    base = int(values['base'])
+    session['delta'] = difficulties_delta[base]
+
+    return redirect(url_for('root'))
 
 
 @app.route('/compare', methods=['POST'])
@@ -191,7 +190,6 @@ def compare():
     good_class_confidence = scores[:,1]
     cpu_winner_predict = np.argmax(good_class_confidence)
     cpu_correct = (winner == cpu_winner_predict)
-
     
     if session.get('cpu_current'):
         if cpu_correct:
