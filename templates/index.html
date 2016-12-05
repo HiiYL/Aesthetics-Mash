@@ -11,7 +11,7 @@
 <body>
   {% if cpu_confidence is defined %}
     <div class="mdl-grid">
-      <div class="mdl-cell mdl-cell--3-col mdl-cell--2-offset">
+      <div class="mdl-cell-middle mdl-cell--4-col mdl-cell--1-offset">
         <div class="demo-card-image mdl-card mdl-shadow--2dp base heatmap
          {{'player' if selected == 0 }} {{ 'groundtruth' if groundtruth == 0 }}
          {{'computer' if cpu_selected == 0}}">
@@ -26,7 +26,7 @@
         </h5>
         {% endif %}
       </div>
-      <div class="mdl-cell mdl-cell--3-col mdl-cell--1-offset">
+      <div class="mdl-cell-middle mdl-cell--3-col mdl-cell--1-offset">
         <div class="demo-card-image mdl-card mdl-shadow--2dp compare heatmap
          {{'player' if selected == 1 }} {{ 'groundtruth' if groundtruth == 1 }}
          {{'computer' if cpu_selected == 1}}">
