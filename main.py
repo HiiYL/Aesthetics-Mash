@@ -1,3 +1,14 @@
+## Hack to modify dim ordering
+import os
+
+filename = os.path.join(os.path.expanduser('~'), '.keras', 'keras.json')
+os.makedirs(os.path.dirname(filename), exist_ok=True)
+with open(filename, "w") as f:
+    f.write('{"backend": "theano","floatx": "float32","epsilon": 1e-07,"image_dim_ordering": "th"}')
+
+##
+
+
 from flask import Flask, request, redirect, url_for, render_template,send_from_directory,session
 from flask import g
 from werkzeug import secure_filename
@@ -16,7 +27,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 from datetime import datetime
 
-import tempfile
+
 
 
 UPLOAD_FOLDER = 'uploads/'
@@ -24,12 +35,14 @@ HEATMAP_FOLDER = 'heatmaps/'
 TEST_IMAGES_FOLDER='test_images/'
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 
+database_dir = 'database/'
+
 app = Flask(__name__, static_url_path='')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['TEST_IMAGES_FOLDER'] = TEST_IMAGES_FOLDER
 app.config['HEATMAP_FOLDER'] = HEATMAP_FOLDER
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(
-    tempfile.gettempdir(), 'test.db')
+    database_dir, 'test.db')
 
 delta = 1.5
 
@@ -38,8 +51,9 @@ db = SQLAlchemy(app)
 # To read from sqlite3 database
 # import sqlite3
 # import pandas as pd
-# cnx = sqlite3.connect('/tmp/test.db')
-# pd.read_sql('SELECT * from game_session',cnx)
+# cnx = sqlite3.connect(os.path.join(
+#     tempfile.gettempdir(), 'test.db'))
+# df = pd.read_sql('SELECT * from game_session',cnx)
 
 
 # from main import db
