@@ -264,5 +264,5 @@ if __name__ == "__main__":
     # app.debug = True
     app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
     # print("YOUR IP ADDRESS IS: {0}".format(ni.ifaddresses('en0')[2][0]['addr']))
-    app.run(host='0.0.0.0')
+    app.run(host='0.0.0.0', port=5001)
     # app.run()
